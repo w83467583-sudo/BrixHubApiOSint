@@ -19,7 +19,7 @@ python main.py
 Quick Start
 
 attender 10 15 sec avant la première recherche pour éviter le rate limites
-parfois le programme failli a changer l api pour ce faire il faut aller dans le dossier tmp_api puis api.json pour la changer (en cas d erreur 401 récurente)
+Pour changer l api il faut aller dans le dossier tmp_api puis api.json pour la changer (en cas d erreur 401 récurente)
 
 L'application sépare les filtres de recherche et l'affichage des profils trouvés dans deux colonnes distinctes.
 
@@ -47,7 +47,7 @@ Plaintext
 ├──────────────────────────────────────┤
 │ [ >>> EXECUTER LA RECHERCHE <<< ]    │ --> Envoie la requête à l'API
 ├──────────────────────────────────────┤
-│ [ CLEAN ] [ Config API ] [ Quitter ] │ --> clean supprime les donners rempli et Config API change l'API stocker dans le json (il faut relancer l'appli pour appliquer les changements)
+│ [ CLEAN ]                [ Quitter ] │ --> clean supprime les donners rempli 
 └──────────────────────────────────────┘
 Module Output
 Les données reçues sont nettoyées, puis triées par catégories dans le panneau de droite.
