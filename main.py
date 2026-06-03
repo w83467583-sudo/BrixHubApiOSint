@@ -16,11 +16,11 @@ EXPORT_DIR = "exports_dox"
 CONFIG_FILE = os.path.join(TMP_DIR, "api.json")
 BASE_URL = "https://brixhub.net/api/v1"
 
-ASCII_ART = """____________________._______  ______ ___  ____ _____________  ________  ________  ____  ___
-\\______   \\______   \\   \\   \\/  /   |   \\|    |   \\______   \\ \\______ \\  \\_____  \\ \\   \\/  /
- |    |  _/|       _/   |\\     /    ~    \\    |   /|    |  _/  |    |  \\  /   |   \\ \\     / 
+ASCII_ART = """____________________._______  ______ ___  ____ -------------  --------  --------  ____  ___
+\\______    \\______    \\   \\   \\/  /   |   \\|    |   \\______    \\ \\______ \\  \\-----    \\ \\   \\/  /
+ |    |  _/|       _/   |\\     /    ~    \\    |   /|    |  _/  |    |  \\  /   |    \\ \\     / 
  |    |   \\|    |   \\   |/     \\    Y    /    |  / |    |   \\  |    `   \\/    |    \\/     \\ 
- |______  /|____|_  /___/___/\\  \\___|_  /|______/  |______  / /_______  /\\_______  /___/\\  \\
+ |______  /|____|_  /___/___/\\  \\___|_  /|______/  |______  / /-------  /\\-------  /___/\\  \\
         \\/        \\/          \\_/     \\/                  \\/        \\/         \\/       \\_/"""
 
 LISTE_CATEGORIES = [
@@ -67,15 +67,19 @@ def charger_cle_json():
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                return json.load(f).get("api_key", "")
+                cle = json.load(f).get("api_key", "")
+                return cle.strip()
         except: pass
     return ""
 
 def sauvegarder_cle_json(cle):
     initialiser_dossiers()
-    data = {"api_key": cle.strip(), "mis_a_jour_le": datetime.now().strftime('%d/%m/%Y %H:%M:%S')}
+    # Nettoyage strict pour éviter les retours à la ligne ou espaces parasites
+    cle_propre = cle.strip().replace("\n", "").replace("\r", "").replace(" ", "")
+    data = {"api_key": cle_propre, "mis_a_jour_le": datetime.now().strftime('%d/%m/%Y %H:%M:%S')}
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+    return cle_propre
 
 def vider_tous_les_champs():
     global resultats_temps_reel, statut_recherche
@@ -292,10 +296,13 @@ def prompt_saisie_interne(stdscr, label):
     stdscr.refresh()
     curses.echo()
     curses.curs_set(1)
-    buffer = stdscr.getstr(y_input, 4 + len(f"Entrez {label} : "), 50)
+    buffer = stdscr.getstr(y_input, 4 + len(f"Entrez {label} : "), 80) # Augmenté à 80 caractères max pour la clé longue
     curses.noecho()
     curses.curs_set(0)
-    return buffer.decode('utf-8').strip()
+    
+    # Encodage propre et nettoyage immédiat des espaces/retours chariots cachés
+    resultat = buffer.decode('utf-8', errors='ignore').strip()
+    return resultat.replace("\n", "").replace("\r", "").replace(" ", "")
 
 def gerer_sous_menu_champs(stdscr, nom_cat):
     champs = categories[nom_cat]
@@ -368,8 +375,7 @@ def interface_principale(stdscr):
         stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE / DEMANDE", curses.color_pair(2) | curses.A_BOLD)
         val = prompt_saisie_interne(stdscr, "API_KEY")
         if val:
-            cle_api = val
-            sauvegarder_cle_json(cle_api)
+            cle_api = sauvegarder_cle_json(val)
 
     index_global = 0
     focus_colonne = "GAUCHE"
@@ -422,12 +428,12 @@ def interface_principale(stdscr):
             stdscr.addstr(y_bas + 1, 2, label_recherche[:m_x-2], curses.color_pair(1))
 
         est_clean = (index_global == 7 and focus_colonne == "GAUCHE")
-        est_quit  = (index_global == 9 and focus_colonne == "GAUCHE")
+        est_quit  = (index_global == 8 and focus_colonne == "GAUCHE")
         
         stdscr.addstr(y_bas + 3, 2, "[ CLEAN ]", curses.color_pair(2) if est_clean else curses.A_DIM)
-        stdscr.addstr(y_bas + 3, 31, "[ Quitter ]", curses.color_pair(2) if est_quit else curses.A_DIM)
+        stdscr.addstr(y_bas + 3, 20, "[ Quitter ]", curses.color_pair(2) if est_quit else curses.A_DIM)
 
-        # ==================== BLOC DE DROITE (RÉSULTATS ULTRA CLAIRS) ====================
+        # ==================== BLOC DE DROITE ====================
         stdscr.addstr(4, m_x + 3, "--- RESULTATS COMPLETS & DETAILLES ---", curses.A_BOLD | curses.color_pair(1))
         stdscr.addstr(5, m_x + 3, f"Statut : {statut_recherche}"[:w-m_x-6], curses.A_DIM)
         
@@ -447,7 +453,6 @@ def interface_principale(stdscr):
                         lignes_a_afficher.append(("PREVIEW_CHAMP", f"  * {k} = {v}"))
                         lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
         else:
-            # Structure thématique ultra-pro pour chaque profil
             mapping_structure = [
                 ("[ IDENTITE & ETAT CIVIL ]", ["prenom", "nom_famille", "nom_naissance", "nom_affichage", "nom_utilisateur", "genre", "civilit"]),
                 ("[ INFORMATION NAISSANCE ]", ["date_naissanc", "jour_naissance", "mois_naissance", "annee_naissanc", "ville_naissanc", "lieu_naissanc"]),
@@ -464,7 +469,6 @@ def interface_principale(stdscr):
                 lignes_a_afficher.append(("TEXTE_SIMPLE", "└" + "─" * (w - m_x - 8) + "┘"))
                 lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
                 
-                # Distribution des clés dans les sous-blocs pour un rendu propre
                 for nom_bloc, cles_bloc in mapping_structure:
                     bloc_a_ajouter = []
                     for cle in cles_bloc:
@@ -478,7 +482,6 @@ def interface_principale(stdscr):
                         lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
                         lignes_a_afficher.extend(bloc_a_ajouter)
                 
-                # Récupération des clés inconnues ou génériques hors structure
                 cles_deja_traitees = sum([c for n, c in mapping_structure], []) + ['_confidence', '_sources']
                 bloc_extra = []
                 for k, v in profil.items():
@@ -543,7 +546,7 @@ def interface_principale(stdscr):
 
         if key == curses.KEY_RIGHT and resultats_temps_reel:
             focus_colonne = "DROITE"
-            index_element_selectionne = 1  # Se met directement sur l'en-tête du profil
+            index_element_selectionne = 1
             scroll_offset_y = 0
         elif key == curses.KEY_LEFT:
             focus_colonne = "GAUCHE"
@@ -551,9 +554,9 @@ def interface_principale(stdscr):
         # ==================== NAVIGATION COLONNE GAUCHE ====================
         if focus_colonne == "GAUCHE":
             if key == curses.KEY_UP:
-                index_global = (index_global - 1) % 10
+                index_global = (index_global - 1) % 9
             elif key == curses.KEY_DOWN:
-                index_global = (index_global + 1) % 10
+                index_global = (index_global + 1) % 9
             elif key in [10, 13, curses.KEY_ENTER]:
                 if index_global < 6:
                     gerer_sous_menu_champs(stdscr, LISTE_CATEGORIES[index_global])
@@ -563,13 +566,6 @@ def interface_principale(stdscr):
                     vider_tous_les_champs()
                     statut_recherche = "Toutes les selections ont ete nettoyees"
                 elif index_global == 8:
-                    n_cle = prompt_saisie_interne(stdscr, "Nouvelle Cle API")
-                    if n_cle:
-                        cle_api = n_cle
-                        sauvegarder_cle_json(cle_api)
-                        ok, msg = tester_cle_api(cle_api)
-                        statut_recherche = f"Nouvelle API ! Test: {msg}"
-                elif index_global == 9:
                     break
                     
         # ==================== NAVIGATION COLONNE DROITE ====================
