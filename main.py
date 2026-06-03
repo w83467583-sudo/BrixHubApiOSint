@@ -10,9 +10,10 @@ try:
 except ImportError:
     print("Erreur : Le module 'curses' est requis. Installez-le avec : pip install windows-curses")
     sys.exit(1)
-
-TMP_DIR = "tmp_api"
-EXPORT_DIR = "exports_dox"
+    
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+TMP_DIR = os.path.join(SCRIPT_DIR, "tmp_api")
+EXPORT_DIR = os.path.join(SCRIPT_DIR, "exports_dox")
 CONFIG_FILE = os.path.join(TMP_DIR, "api.json")
 BASE_URL = "https://brixhub.net/api/v1"
 
