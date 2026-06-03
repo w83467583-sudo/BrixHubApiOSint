@@ -43,7 +43,7 @@ Plaintext
 ├──────────────────────────────────────┤
 │ [ >>> EXECUTER LA RECHERCHE <<< ]    │ --> Envoie la requête à l'API
 ├──────────────────────────────────────┤
-│ [ CLEAN ] [ Config API ] [ Quitter ] │
+│ [ CLEAN ] [ Config API ] [ Quitter ] │ --> clean supprime les donners rempli et Config API change l'API stocker dans le json (il faut relancer l'appli pour appliquer les changements)
 └──────────────────────────────────────┘
 Module Output
 Les données reçues sont nettoyées, puis triées par catégories dans le panneau de droite.
@@ -65,3 +65,17 @@ Plaintext
 │     * DISCORD_ID         : 123456789012345678          │
 │     * FIVEM_ID           : fivem:123456                │
 └────────────────────────────────────────────────────────┘
+pour éviter les erreurs de requètes potentionnels éviter de spammers
+
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│ STATUS CODE | ERROR TYPE       | VISUAL DESCRIPTION                              │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ * 400       | bad_request      | Err 400 (Parametres invalides)                  │
+│ * 401       | unauthorized     | Err 401 (Cle manquante / invalide)              │
+│ * 401       | expired          | Err 401 (Cle expiree)                           │
+│ * 403       | plan_limited     | Err 403 (Fonctionnalite non disponible)         │
+│ * 429       | quota_exceeded   | Err 429 (Quota journalier depasse)              │
+│ * 429       | rate_limited     | Err 429 (Trop de requetes par minute)           │
+│ * 500       | internal         | Err 500 (Erreur serveur)                        │
+│ * 503       | service_not_avail| Err 503 (Base inaccessible)                     │
+└──────────────────────────────────────────────────────────────────────────────────┘
