@@ -10,10 +10,15 @@ try:
 except ImportError:
     print("Erreur : Le module 'curses' est requis. Installez-le avec : pip install windows-curses")
     sys.exit(1)
-    
+
+# Récupère le dossier absolu dans lequel se trouve ce script Python
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Associe les sous-dossiers au dossier du script
 TMP_DIR = os.path.join(SCRIPT_DIR, "tmp_api")
 EXPORT_DIR = os.path.join(SCRIPT_DIR, "exports_dox")
+
+# Le reste ne change pas, CONFIG_FILE utilisera automatiquement le bon chemin
 CONFIG_FILE = os.path.join(TMP_DIR, "api.json")
 BASE_URL = "https://brixhub.net/api/v1"
 
@@ -373,7 +378,7 @@ def interface_principale(stdscr):
     while not cle_api:
         stdscr.clear()
         stdscr.box()
-        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE / DEMANDE", curses.color_pair(2) | curses.A_BOLD)
+        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE (BixHub.net/api)", curses.color_pair(2) | curses.A_BOLD)
         val = prompt_saisie_interne(stdscr, "API_KEY")
         if val:
             cle_api = sauvegarder_cle_json(val)
