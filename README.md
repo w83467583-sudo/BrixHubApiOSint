@@ -1,11 +1,11 @@
 BrixHub CLI Dashboard
-BrixHub CLI Dashboard checks data from the BrixHub API and displays information via a terminal user interface.
+BrixHub CLI Dashboard est une interface utilisateur en terminal (TUI) conçue pour interagir avec l'API BrixHub, filtrer des requêtes et exporter des données.
 
-Retrieves information using a dual-column layout.
+Permet une navigation fluide au clavier.
 
-Does not require heavy resources.
+Gère l'affichage dynamique et le défilement des données.
 
-Runs on Python 3.
+Fonctionne sous Python 3.
 
 Installation
 With PyPI
@@ -17,28 +17,48 @@ git clone https://github.com/votre-profil/brixhub-dashboard.git
 cd brixhub-dashboard
 python test.py
 Quick Start
-The dashboard can be run directly from the CLI to search and export profiles.
+L'application sépare les filtres de recherche et l'affichage des profils trouvés dans deux colonnes distinctes.
 
+Navigation Controles
+Plaintext
+* [FLECHE HAUT / BAS]   : Déplacer la sélection dans les menus
+* [FLECHE DROITE]       : Basculer vers le panneau des résultats
+* [FLECHE GAUCHE]       : Revenir au panneau des filtres
+* [ENTREE]              : Modifier un champ ou exporter un profil
 CLI Example
 Bash
 python test.py
-Python Example
-Python
-import curses
-import requests
-
-payload = {"prenom": "John", "nom_famille": "Doe"}
-headers = {"X-API-Key": "YOUR_KEY"}
-r = requests.post("https://brixhub.net/api/v1/search", json=payload, headers=headers)
-print(r.json())
+Menu Principal (Panneau Gauche)
+Plaintext
+┌──────────────────────────────────────┐
+│ * 1. IDENTITÉ                        │ --> Appuyez sur [ENTRÉE] pour éditer
+│ * 2. NAISSANCE                       │
+│ * 3. CONTACT                         │
+│ * 4. LOCALISATION                    │
+│ * 5. FIVEM / GTA RP                  │
+│ * 6. CHAMPS AVANCÉS                  │
+├──────────────────────────────────────┤
+│ [ >>> EXECUTER LA RECHERCHE <<< ]    │ --> Envoie la requête à l'API
+├──────────────────────────────────────┤
+│ [ CLEAN ] [ Config API ] [ Quitter ] │
+└──────────────────────────────────────┘
 Module Output
-For each profile, data is returned in a standard dictionary format:
+Les données reçues sont nettoyées, puis triées par catégories dans le panneau de droite.
 
-JSON
-{
-  "prenom": "John",
-  "nom_famille": "Doe",
-  "email": "john.doe@email.com",
-  "fivem_id": "fivem:123456",
-  "_confidence": 95
-}
+Panneau Droite (Résultats)
+Plaintext
+┌────────────────────────────────────────────────────────┐
+│ PROFIL #1 ── Fiabilité : 95%                           │
+├────────────────────────────────────────────────────────┤
+│ [ IDENTITE & ETAT CIVIL ]                              │
+│     * PRENOM             : John                        │
+│     * NOM_FAMILLE        : Doe                         │
+│                                                        │
+│ [ COORDONNEES DE CONTACT ]                             │
+│     * EMAIL              : john.doe@email.com          │
+│     * ADRESSE_IP         : 127.0.0.1                   │
+│                                                        │
+│ [ EMPREINTE GAMING & RP ]                              │
+│     * DISCORD_ID         : 123456789012345678          │
+│     * FIVEM_ID           : fivem:123456                │
+└────────────────────────────────────────────────────────┘
