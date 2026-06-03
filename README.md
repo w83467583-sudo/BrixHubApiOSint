@@ -4,7 +4,7 @@ BrixHub CLI Dashboard est une interface utilisateur en terminal (TUI) conçue po
 
 * Permet une navigation fluide au clavier.
 * Gère l'affichage dynamique et le défilement des données.
-* Fonctionne sous Python 3.
+* Fonctionne sous Python et Python 3+.
 ## Disclaimer 
 L'utilisation de cet outil (Dox Create) est strictement réservée à un but éducatif et de recherche en sécurité informatique.
 
