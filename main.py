@@ -164,7 +164,7 @@ def executer_recherche(stdscr, cle_api):
         return
 
     payload["flexible"] = False
-    payload["per_page"] = 10
+    payload["per_page"] = 100
 
     dernier_timestamp_recherche = temps_actuel
     afficher_chargement_barre(stdscr, "Recherche BrixHub en cours...")
@@ -378,7 +378,7 @@ def interface_principale(stdscr):
     while not cle_api:
         stdscr.clear()
         stdscr.box()
-        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE (BixHub.net/api)", curses.color_pair(2) | curses.A_BOLD)
+        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE (BrixHub.net/api)", curses.color_pair(2) | curses.A_BOLD)
         val = prompt_saisie_interne(stdscr, "API_KEY")
         if val:
             cle_api = sauvegarder_cle_json(val)
@@ -591,6 +591,5 @@ def interface_principale(stdscr):
                     
                 focus_colonne = "GAUCHE"
                 index_global = 0
-BRIXHUB DASHBOARD
 if __name__ == "__main__":
     curses.wrapper(interface_principale)
