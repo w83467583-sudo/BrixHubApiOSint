@@ -13,9 +13,9 @@ BrixHub CLI Dashboard est une interface utilisateur en terminal (TUI) conçue po
 pip install windows-curses requests
 With GitHub
 Bash
-git clone https://github.com/votre-profil/brixhub-dashboard.git
-cd brixhub-dashboard
-python test.py
+git clone https://github.com/w83467583-sudo/BrixHubApiOSint.git
+cd BrixHubApiOSint
+python main.py
 Quick Start
 L'application sépare les filtres de recherche et l'affichage des profils trouvés dans deux colonnes distinctes.
 
