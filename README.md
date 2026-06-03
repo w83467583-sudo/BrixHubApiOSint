@@ -1,15 +1,15 @@
-BrixHub CLI Dashboard
+# BrixHub CLI Dashboard
+
 BrixHub CLI Dashboard est une interface utilisateur en terminal (TUI) conçue pour interagir avec l'API BrixHub, filtrer des requêtes et exporter des données.
 
-Permet une navigation fluide au clavier.
+* Permet une navigation fluide au clavier.
+* Gère l'affichage dynamique et le défilement des données.
+* Fonctionne sous Python 3.
 
-Gère l'affichage dynamique et le défilement des données.
+## Installation
 
-Fonctionne sous Python 3.
-
-Installation
-With PyPI
-Bash
+### With PyPI
+```bash
 pip install windows-curses requests
 With GitHub
 Bash
@@ -20,11 +20,14 @@ Quick Start
 L'application sépare les filtres de recherche et l'affichage des profils trouvés dans deux colonnes distinctes.
 
 Navigation Controles
-Plaintext
-* [FLECHE HAUT / BAS]   : Déplacer la sélection dans les menus
-* [FLECHE DROITE]       : Basculer vers le panneau des résultats
-* [FLECHE GAUCHE]       : Revenir au panneau des filtres
-* [ENTREE]              : Modifier un champ ou exporter un profil
+[FLECHE HAUT / BAS] : Déplacer la sélection dans les menus
+
+[FLECHE DROITE] : Basculer vers le panneau des résultats
+
+[FLECHE GAUCHE] : Revenir au panneau des filtres
+
+[ENTREE] : Modifier un champ ou exporter un profil
+
 CLI Example
 Bash
 python test.py
