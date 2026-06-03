@@ -365,7 +365,7 @@ def interface_principale(stdscr):
     while not cle_api:
         stdscr.clear()
         stdscr.box()
-        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE ", curses.color_pair(2) | curses.A_BOLD)
+        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE / DEMANDE", curses.color_pair(2) | curses.A_BOLD)
         val = prompt_saisie_interne(stdscr, "API_KEY")
         if val:
             cle_api = val
@@ -391,6 +391,7 @@ def interface_principale(stdscr):
         aff_key = f"{cle_api[:12]}..." if len(cle_api) > 12 else cle_api
         stdscr.addstr(2, 3, f" API active: {aff_key} |", curses.color_pair(1))
 
+        # ==================== BLOC DE GAUCHE ====================
         y_cat = 5
         for idx, cat_name in enumerate(LISTE_CATEGORIES):
             nb_remplis = sum(1 for v in categories[cat_name].values() if v)
@@ -403,6 +404,7 @@ def interface_principale(stdscr):
                 stdscr.addstr(y_cat, 3, texte_bouton[:m_x-4])
             y_cat += 2
 
+        # ==================== BAS GAUCHE : ACTIONS ====================
         y_bas = h - 8
         stdscr.addstr(y_bas, 2, "─" * (m_x - 3), curses.A_DIM)
         
@@ -420,27 +422,32 @@ def interface_principale(stdscr):
             stdscr.addstr(y_bas + 1, 2, label_recherche[:m_x-2], curses.color_pair(1))
 
         est_clean = (index_global == 7 and focus_colonne == "GAUCHE")
-        est_api   = (index_global == 8 and focus_colonne == "GAUCHE")
         est_quit  = (index_global == 9 and focus_colonne == "GAUCHE")
         
         stdscr.addstr(y_bas + 3, 2, "[ CLEAN ]", curses.color_pair(2) if est_clean else curses.A_DIM)
-        stdscr.addstr(y_bas + 3, 14, "[ Config API ]", curses.color_pair(3) if est_api else curses.A_DIM)
         stdscr.addstr(y_bas + 3, 31, "[ Quitter ]", curses.color_pair(2) if est_quit else curses.A_DIM)
 
-        stdscr.addstr(4, m_x + 3, "--- RESULTATS ---", curses.A_BOLD | curses.color_pair(1))
+        # ==================== BLOC DE DROITE (RÉSULTATS ULTRA CLAIRS) ====================
+        stdscr.addstr(4, m_x + 3, "--- RESULTATS COMPLETS & DETAILLES ---", curses.A_BOLD | curses.color_pair(1))
         stdscr.addstr(5, m_x + 3, f"Statut : {statut_recherche}"[:w-m_x-6], curses.A_DIM)
         
         if focus_colonne == "DROITE":
-            stdscr.addstr(5, max(m_x+4, w - 24), "[ SCROLL ]", curses.color_pair(3) | curses.A_BOLD)
+            stdscr.addstr(5, max(m_x+4, w - 24), "[ DEFILEMENT / SCROLL ACTIVE ]", curses.color_pair(3) | curses.A_BOLD)
+        else:
+            stdscr.addstr(5, max(m_x+4, w - 24), "", curses.A_DIM)
 
         lignes_a_afficher = []
         
         if not resultats_temps_reel:
+            lignes_a_afficher.append(("TITRE_BRUT", "En attente d'execution..."))
+            lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
             for c_n, c_ch in categories.items():
                 for k, v in c_ch.items():
                     if v:
                         lignes_a_afficher.append(("PREVIEW_CHAMP", f"  * {k} = {v}"))
+                        lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
         else:
+            # Structure thématique ultra-pro pour chaque profil
             mapping_structure = [
                 ("[ IDENTITE & ETAT CIVIL ]", ["prenom", "nom_famille", "nom_naissance", "nom_affichage", "nom_utilisateur", "genre", "civilit"]),
                 ("[ INFORMATION NAISSANCE ]", ["date_naissanc", "jour_naissance", "mois_naissance", "annee_naissanc", "ville_naissanc", "lieu_naissanc"]),
@@ -457,28 +464,32 @@ def interface_principale(stdscr):
                 lignes_a_afficher.append(("TEXTE_SIMPLE", "└" + "─" * (w - m_x - 8) + "┘"))
                 lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
                 
+                # Distribution des clés dans les sous-blocs pour un rendu propre
                 for nom_bloc, cles_bloc in mapping_structure:
                     bloc_a_ajouter = []
                     for cle in cles_bloc:
                         valeur = profil.get(cle)
                         if valeur:
                             bloc_a_ajouter.append(("INFO_LIGNE", f"    → {cle.upper().ljust(18)} : {valeur}"))
+                            bloc_a_ajouter.append(("TEXTE_SIMPLE", ""))
                     
                     if bloc_a_ajouter:
                         lignes_a_afficher.append(("SECTION_BLOC", f"  {nom_bloc}"))
-                        lignes_a_afficher.extend(bloc_a_ajouter)
                         lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
+                        lignes_a_afficher.extend(bloc_a_ajouter)
                 
+                # Récupération des clés inconnues ou génériques hors structure
                 cles_deja_traitees = sum([c for n, c in mapping_structure], []) + ['_confidence', '_sources']
                 bloc_extra = []
                 for k, v in profil.items():
                     if k not in cles_deja_traitees and v:
                         bloc_extra.append(("INFO_LIGNE", f"    → {k.upper().ljust(18)} : {v}"))
+                        bloc_extra.append(("TEXTE_SIMPLE", ""))
                 
                 if bloc_extra:
                     lignes_a_afficher.append(("SECTION_BLOC", "  [ DONNEES COMPLEMENTAIRES BRUTES ]"))
-                    lignes_a_afficher.extend(bloc_extra)
                     lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
+                    lignes_a_afficher.extend(bloc_extra)
 
                 lignes_a_afficher.append(("TEXTE_SIMPLE", "═" * (w - m_x - 6)))
                 lignes_a_afficher.append(("TEXTE_SIMPLE", ""))
@@ -509,7 +520,7 @@ def interface_principale(stdscr):
             if type_ligne == "ENTETE_PROFIL":
                 txt = element[1]
                 if est_element_selectionne:
-                    stdscr.addstr(y_ecran, m_x + 3, f"  > GENERER LE DOX <  ", curses.color_pair(3) | curses.A_BOLD)
+                    stdscr.addstr(y_ecran, m_x + 3, f"  > CLIQUEZ ICI POUR GENERER LE DOX <  ", curses.color_pair(3) | curses.A_BOLD)
                 else:
                     stdscr.addstr(y_ecran, m_x + 3, txt[:w-m_x-4], curses.color_pair(1) | curses.A_BOLD)
             elif type_ligne == "SECTION_BLOC":
@@ -532,11 +543,12 @@ def interface_principale(stdscr):
 
         if key == curses.KEY_RIGHT and resultats_temps_reel:
             focus_colonne = "DROITE"
-            index_element_selectionne = 1 
+            index_element_selectionne = 1  # Se met directement sur l'en-tête du profil
             scroll_offset_y = 0
         elif key == curses.KEY_LEFT:
             focus_colonne = "GAUCHE"
 
+        # ==================== NAVIGATION COLONNE GAUCHE ====================
         if focus_colonne == "GAUCHE":
             if key == curses.KEY_UP:
                 index_global = (index_global - 1) % 10
@@ -549,17 +561,18 @@ def interface_principale(stdscr):
                     executer_recherche(stdscr, cle_api)
                 elif index_global == 7:
                     vider_tous_les_champs()
-                    statut_recherche = "Nettoye"
+                    statut_recherche = "Toutes les selections ont ete nettoyees"
                 elif index_global == 8:
                     n_cle = prompt_saisie_interne(stdscr, "Nouvelle Cle API")
                     if n_cle:
                         cle_api = n_cle
                         sauvegarder_cle_json(cle_api)
                         ok, msg = tester_cle_api(cle_api)
-                        statut_recherche = f"Test API: {msg}"
+                        statut_recherche = f"Nouvelle API ! Test: {msg}"
                 elif index_global == 9:
                     break
                     
+        # ==================== NAVIGATION COLONNE DROITE ====================
         elif focus_colonne == "DROITE" and max_elements > 0:
             if key == curses.KEY_UP:
                 index_element_selectionne = (index_element_selectionne - 1) % max_elements
