@@ -365,7 +365,7 @@ def interface_principale(stdscr):
     while not cle_api:
         stdscr.clear()
         stdscr.box()
-        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE / DEMANDE", curses.color_pair(2) | curses.A_BOLD)
+        stdscr.addstr(2, 4, "CLE API INITIALE MANQUANTE ", curses.color_pair(2) | curses.A_BOLD)
         val = prompt_saisie_interne(stdscr, "API_KEY")
         if val:
             cle_api = val
